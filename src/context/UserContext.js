@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import {createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword} from 'firebase/auth';
+import {createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut} from 'firebase/auth';
 import app from '../firebase/firebase.config';
 
 export const AuthContext = createContext();
@@ -9,6 +9,8 @@ const auth = getAuth(app);
 const UserContext = ({children}) => {
     const [user, setUser] = useState({displayName: 'Akash'});
 
+    const googleProvider = new GoogleAuthProvider();
+
     const createUser = (email, password, name) =>{
         return createUserWithEmailAndPassword(auth, email, password, name);
 
@@ -16,6 +18,14 @@ const UserContext = ({children}) => {
 
     const signIn = (email, password)=>{
         return signInWithEmailAndPassword(auth, email, password);
+    }
+
+    const signInWithGoogle = () =>{
+        return signInWithPopup(auth, googleProvider)
+    }
+
+    const logOut = () =>{
+        return signOut(auth);
     }
 
     //why are we doing this?
@@ -29,7 +39,7 @@ const UserContext = ({children}) => {
         }
     }, [])
 
-    const authInfo = {user, createUser, signIn}
+    const authInfo = {user, createUser, signIn, logOut, signInWithGoogle}
 
     return (
         <AuthContext.Provider value={authInfo}>
